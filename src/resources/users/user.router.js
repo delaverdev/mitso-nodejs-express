@@ -1,14 +1,32 @@
 import { Router } from 'express';
-
-import User from './user.model.js';
-import * as usersService from './user.service.js';
+import * as service from './user.service.js';
 
 const router = Router();
 
-router.route('/').get(async (req, res) => {
-  const users = await usersService.getAll();
-  // map user fields to exclude secret fields like "password"
-  res.json(users.map(User.toResponse));
-});
+router
+  .route('/')
+  .get(async (req, res) => {
+    const list = await service.getAll();
+    res.json(list);
+  })
+  .post(async (req, res) => {
+    const u = await service.create(req.body);
+    res.status(201).json(u);
+  });
+
+router
+  .route('/:id')
+  .get(async (req, res) => {
+    const u = await service.getById(req.params.id);
+    res.json(u);
+  })
+  .put(async (req, res) => {
+    const u = await service.update(req.params.id, req.body);
+    res.json(u);
+  })
+  .delete(async (req, res) => {
+    await service.remove(req.params.id);
+    res.sendStatus(204);
+  });
 
 export default router;
