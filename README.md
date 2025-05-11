@@ -14,8 +14,8 @@ npm install
 
 ## Running
 ```bash
-npm run start   # development mode with nodemon
-npm run lint    # automatically fix lint errors
+npm run build
+npm start
 ```
 
 ## API Endpoints
