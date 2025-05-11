@@ -1,15 +1,21 @@
 // app.ts
 import express, { Request, Response, NextFunction } from 'express';
 import { PORT } from './common/config.ts';
-import { errorHandler } from './common/validator.ts';
+import { requestLogger } from './middlewares/request-logger.middleware.ts';
+import { errorHandler } from './middlewares/error.middleware.ts';
+import { setupErrorHandlers } from './common/error-handlers.ts';
 import userRouter from './resources/users/user.router.ts';
 import tourRouter from './resources/tours/tour.router.ts';
 import scheduleRouter from './resources/schedules/schedule.router.ts';
 import priceRouter from './resources/prices/price.router.ts';
 
+// Setup error handlers
+setupErrorHandlers();
+
 const app = express();
 
 app.use(express.json());
+app.use(requestLogger);
 
 // Routes
 app.use('/api/users', userRouter);
