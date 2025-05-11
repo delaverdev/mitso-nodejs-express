@@ -1,36 +1,35 @@
-import repo from './user.memory.repository.ts';
-import User from './user.model.ts';
-import { IUser, IUserResponse } from '../../types/types.ts';
+import { UserRepository } from './user.repository';
+import { IUser, IUserResponse } from '../../types/types';
+
+const userRepository = new UserRepository();
 
 const getAll = async (): Promise<IUserResponse[]> => {
-  const users = await repo.getAll();
-  return users.map(user => User.toResponse(user));
+  return userRepository.getAll();
 };
 
 const getById = async (id: string): Promise<IUserResponse> => {
-  const user = await repo.getById(id);
+  const user = await userRepository.getById(id);
   if (!user) {
     throw new Error('User not found');
   }
-  return User.toResponse(user);
+  return user;
 };
 
-const create = async (userData: IUser): Promise<IUserResponse> => {
-  const user = await repo.create(userData);
-  return User.toResponse(user);
+const create = async (userData: Omit<IUser, 'id'>): Promise<IUserResponse> => {
+  return userRepository.create(userData);
 };
 
-const update = async (id: string, userData: IUser): Promise<IUserResponse> => {
-  const user = await repo.update(id, userData);
+const update = async (id: string, userData: Partial<IUser>): Promise<IUserResponse> => {
+  const user = await userRepository.update(id, userData);
   if (!user) {
     throw new Error('User not found');
   }
-  return User.toResponse(user);
+  return user;
 };
 
 const remove = async (id: string): Promise<void> => {
-  const user = await repo.remove(id);
-  if (!user) {
+  const success = await userRepository.delete(id);
+  if (!success) {
     throw new Error('User not found');
   }
 };

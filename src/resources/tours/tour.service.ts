@@ -1,42 +1,36 @@
-import repo from './tour.memory.repository.ts';
-import scheduleRepo from '../schedules/schedule.memory.repository.ts';
-import priceRepo from '../prices/price.memory.repository.ts';
-import { ITour } from '../../types/types.ts';
+import { TourRepository } from './tour.repository';
+import { ITour, ITourResponse } from '../../types/types';
 
-const getAll = async () => {
-  return repo.getAll();
+const tourRepository = new TourRepository();
+
+const getAll = async (): Promise<ITourResponse[]> => {
+  return tourRepository.getAll();
 };
 
-const getById = async (id: string) => {
-  const tour = await repo.getById(id);
+const getById = async (id: string): Promise<ITourResponse> => {
+  const tour = await tourRepository.getById(id);
   if (!tour) {
     throw new Error('Tour not found');
   }
   return tour;
 };
 
-const create = async (tourData: ITour) => {
-  return repo.create(tourData);
+const create = async (tourData: Omit<ITour, 'id'>): Promise<ITourResponse> => {
+  return tourRepository.create(tourData);
 };
 
-const update = async (id: string, tourData: ITour) => {
-  const tour = await repo.update(id, tourData);
+const update = async (id: string, tourData: Partial<ITour>): Promise<ITourResponse> => {
+  const tour = await tourRepository.update(id, tourData);
   if (!tour) {
     throw new Error('Tour not found');
   }
   return tour;
 };
 
-const remove = async (id: string) => {
-  const tour = await repo.remove(id);
-  if (!tour) {
+const remove = async (id: string): Promise<void> => {
+  const success = await tourRepository.delete(id);
+  if (!success) {
     throw new Error('Tour not found');
-  }
-  // Remove associated schedules and prices
-  const schedules = await scheduleRepo.getByTourId(id);
-  for (const schedule of schedules) {
-    await scheduleRepo.remove(schedule.id);
-    await priceRepo.removeByScheduleId(schedule.id);
   }
 };
 

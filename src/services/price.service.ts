@@ -1,14 +1,17 @@
 import { IPrice } from '../types/types.ts';
 import { IPriceService } from './index.ts';
-import { IPriceRepository } from '../repositories/index.ts';
-import { IScheduleRepository } from '../repositories/index.ts';
 import { NotFoundError } from '../errors/index.ts';
+import { PriceRepository } from '../resources/prices/price.repository';
+import { ScheduleRepository } from '../resources/schedules/schedule.repository';
 
 export class PriceService implements IPriceService {
-  constructor(
-    private repository: IPriceRepository,
-    private scheduleRepository: IScheduleRepository
-  ) {}
+  private repository: PriceRepository;
+  private scheduleRepository: ScheduleRepository;
+
+  constructor() {
+    this.repository = new PriceRepository();
+    this.scheduleRepository = new ScheduleRepository();
+  }
 
   async getAll(scheduleId?: string): Promise<IPrice[]> {
     const prices = await this.repository.getAll();
@@ -49,6 +52,6 @@ export class PriceService implements IPriceService {
     if (!price) {
       throw new NotFoundError('Price not found');
     }
-    await this.repository.remove(id);
+    await this.repository.delete(id);
   }
 } 

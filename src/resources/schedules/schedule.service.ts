@@ -1,15 +1,19 @@
 // src/resources/schedules/schedule.service.ts
-import repo from './schedule.memory.repository.ts';
-import tourRepo from '../tours/tour.memory.repository.ts';
-import priceRepo from '../prices/price.memory.repository.ts';
-import { ISchedule, IPrice } from '../../types/types.ts';
+import { ScheduleRepository } from './schedule.repository';
+import { TourRepository } from '../tours/tour.repository';
+import { PriceRepository } from '../prices/price.repository';
+import { ISchedule, IPrice, IScheduleResponse } from '../../types/types';
 
-const getAll = async (tourId?: string) => {
-  return tourId ? repo.getByTourId(tourId) : repo.getAll();
+const scheduleRepository = new ScheduleRepository();
+const tourRepository = new TourRepository();
+const priceRepository = new PriceRepository();
+
+const getAll = async (tourId?: string): Promise<IScheduleResponse[]> => {
+  return scheduleRepository.getAll();
 };
 
-const getById = async (id: string) => {
-  const schedule = await repo.getById(id);
+const getById = async (id: string): Promise<IScheduleResponse> => {
+  const schedule = await scheduleRepository.getById(id);
   if (!schedule) {
     throw new Error('Schedule not found');
   }
@@ -17,32 +21,32 @@ const getById = async (id: string) => {
 };
 
 const getByTourId = async (tourId: string) => {
-  return repo.getByTourId(tourId);
+  return scheduleRepository.getByTourId(tourId);
 };
 
-const create = async (scheduleData: ISchedule) => {
-  const tour = await tourRepo.getById(scheduleData.tourId);
+const create = async (scheduleData: Omit<ISchedule, 'id'>): Promise<IScheduleResponse> => {
+  const tour = await tourRepository.getById(scheduleData.tourId);
   if (!tour) {
     throw new Error('Tour not found');
   }
-  return repo.create(scheduleData);
+  return scheduleRepository.create(scheduleData);
 };
 
-const update = async (id: string, scheduleData: ISchedule) => {
-  const schedule = await repo.update(id, scheduleData);
+const update = async (id: string, scheduleData: Partial<ISchedule>): Promise<IScheduleResponse> => {
+  const schedule = await scheduleRepository.update(id, scheduleData);
   if (!schedule) {
     throw new Error('Schedule not found');
   }
   return schedule;
 };
 
-const remove = async (id: string) => {
-  const schedule = await repo.remove(id);
-  if (!schedule) {
+const remove = async (id: string): Promise<void> => {
+  const success = await scheduleRepository.delete(id);
+  if (!success) {
     throw new Error('Schedule not found');
   }
   // Remove associated prices
-  await priceRepo.removeByScheduleId(id);
+  await priceRepository.delete(id);
 };
 
 export default {
@@ -59,5 +63,5 @@ export async function getPrices(id: string): Promise<IPrice[]> {
   if (!schedule) {
     throw { status: 404, message: 'Schedule not found' };
   }
-  return priceRepo.getAll().then(prices => prices.filter(price => price.scheduleId === id));
+  return priceRepository.getByScheduleId(schedule.id);
 }

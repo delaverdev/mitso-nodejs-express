@@ -7,9 +7,9 @@
   },
   "type": "module",
   "description": "nodejs-mitso",
-  "main": "dist/server.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node dist/index.js",
     "dev": "node --loader ts-node/esm --experimental-specifier-resolution=node src/index.ts",
     "build": "tsc",
     "lint": "eslint --ext .js,.ts --fix src/",
@@ -43,12 +43,14 @@
     ]
   },
   "dependencies": {
+    "@prisma/client": "^6.7.0",
     "@types/cors": "^2.8.18",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
-    "dotenv": "^9.0.0",
+    "dotenv": "^9.0.2",
     "express": "^4.17.1",
     "express-validator": "^7.0.1",
+    "prisma": "^6.7.0",
     "uuid": "^8.3.2",
     "winston": "^3.11.0"
   },

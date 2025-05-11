@@ -1,33 +1,35 @@
-import repo from './price.memory.repository.ts';
-import { IPrice } from '../../types/types.ts';
+import { PriceRepository } from './price.repository';
+import { IPrice, IPriceResponse } from '../../types/types';
 
-const getAll = async () => {
-  return repo.getAll();
+const priceRepository = new PriceRepository();
+
+const getAll = async (): Promise<IPriceResponse[]> => {
+  return priceRepository.getAll();
 };
 
-const getById = async (id: string) => {
-  const price = await repo.getById(id);
+const getById = async (id: string): Promise<IPriceResponse> => {
+  const price = await priceRepository.getById(id);
   if (!price) {
     throw new Error('Price not found');
   }
   return price;
 };
 
-const create = async (priceData: IPrice) => {
-  return repo.createPrice(priceData);
+const create = async (priceData: Omit<IPrice, 'id'>): Promise<IPriceResponse> => {
+  return priceRepository.create(priceData);
 };
 
-const update = async (id: string, priceData: IPrice) => {
-  const price = await repo.updatePrice(id, priceData);
+const update = async (id: string, priceData: Partial<IPrice>): Promise<IPriceResponse> => {
+  const price = await priceRepository.update(id, priceData);
   if (!price) {
     throw new Error('Price not found');
   }
   return price;
 };
 
-const remove = async (id: string) => {
-  const price = await repo.deletePrice(id);
-  if (!price) {
+const remove = async (id: string): Promise<void> => {
+  const success = await priceRepository.delete(id);
+  if (!success) {
     throw new Error('Price not found');
   }
 };

@@ -1,14 +1,17 @@
 import { ITour, ISchedule } from '../types/types.ts';
 import { ITourService } from './index.ts';
-import { ITourRepository } from '../repositories/index.ts';
-import { IScheduleRepository } from '../repositories/index.ts';
 import { NotFoundError } from '../errors/index.ts';
+import { TourRepository } from '../resources/tours/tour.repository';
+import { ScheduleRepository } from '../resources/schedules/schedule.repository';
 
 export class TourService implements ITourService {
-  constructor(
-    private repository: ITourRepository,
-    private scheduleRepository: IScheduleRepository
-  ) {}
+  private repository: TourRepository;
+  private scheduleRepository: ScheduleRepository;
+
+  constructor() {
+    this.repository = new TourRepository();
+    this.scheduleRepository = new ScheduleRepository();
+  }
 
   async getAll(): Promise<ITour[]> {
     return this.repository.getAll();
@@ -48,11 +51,6 @@ export class TourService implements ITourService {
     if (!tour) {
       throw new NotFoundError('Tour not found');
     }
-    const schedules = await this.scheduleRepository.getAll();
-    const tourSchedules = schedules.filter(schedule => schedule.tourId === id);
-    for (const schedule of tourSchedules) {
-      await this.scheduleRepository.remove(schedule.id);
-    }
-    await this.repository.remove(id);
+    await this.repository.delete(id);
   }
 } 
