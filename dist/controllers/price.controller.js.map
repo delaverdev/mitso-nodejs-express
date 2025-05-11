@@ -1,0 +1,1 @@
+{"version":3,"file":"price.controller.js","sourceRoot":"","sources":["../../src/controllers/price.controller.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,cAAc,EAAE,MAAM,YAAY,CAAC;AAE5C,MAAM,OAAO,eAAgB,SAAQ,cAAc;IACjD,YAAY,OAAsB;QAChC,KAAK,CAAC,OAAO,CAAC,CAAC;IACjB,CAAC;CACF"}
